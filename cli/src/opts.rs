@@ -13,9 +13,26 @@ pub struct Opts {
 #[derive(Debug, Parser)]
 pub enum SubCommand {
 	#[command(name="csv", about="展示csv或者转换csv到其他格式")]
-	Csv(CsvOpts)
+	Csv(CsvOpts),
+
+	#[command(name="genpass", about="生成随机密码")]
+	GenPass(GenPassOpts)
 }
 
+#[derive(Debug, Parser)]
+pub struct GenPassOpts {
+	#[arg(short, long, default_value_t = 16)]
+	pub length: u8,
+	#[arg(long, default_value_t = true)]
+	pub uppercase: bool,
+	#[arg(long, default_value_t = true)]
+	pub lowercase: bool,
+	#[arg(long, default_value_t = true)]
+	pub numbers: bool,
+	#[arg(long, default_value_t = true)]
+	pub symbol: bool
+
+}
 #[derive(Debug, Clone, Copy)]
 pub enum OutputFormat {
 	Json,
