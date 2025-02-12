@@ -1,11 +1,16 @@
 use clap::Parser;
-use cli::{process_csv_to_json, Opts, SubCommand};
+use cli::{process_csv, Opts, SubCommand};
 
-fn main() {
+fn main() -> anyhow::Result<()> {
 	let opts = Opts::parse();
 	match opts.cmd {
 		SubCommand::Csv(opts) => {
-			process_csv_to_json(&opts.input, &opts.output).unwrap();
+			let output = if let Some(output) = opts.output {
+				output.clone()
+			} else {
+				format!("output.{}", opts.format)
+			};
+			process_csv(&opts.input, output, opts.format)
 		}
 	}
 }
