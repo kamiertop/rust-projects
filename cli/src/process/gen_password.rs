@@ -1,6 +1,7 @@
 use anyhow::Result;
 use rand::rngs::ThreadRng;
 use rand::seq::{IndexedRandom, SliceRandom};
+use zxcvbn::zxcvbn;
 
 const UPPER: &[u8] = b"ABCDEFGHGKLMNPQRSTUVWXYZ";
 const LOWER: &[u8] = b"abcdefghijkmnpqrstuvwxyz";
@@ -37,7 +38,13 @@ pub fn process_gen_password(
 		let c = chars.choose(&mut rng).expect("chars won't be empty in this context");
 		password.push(*c as char)
 	}
+	// 打乱
 	password.shuffle(&mut rng);
+
+
+	let result = zxcvbn(&String::from_iter(password.clone()), &[]);
+	eprintln!("Password strength: {}", result.score());
+	
 	println!("{}", String::from_iter(password));
 
 	Ok(())
