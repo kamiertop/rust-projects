@@ -1,5 +1,5 @@
-pub mod opts;
+pub mod cmd_opts;
 pub mod process;
 
-pub use opts::{CsvOpts, Opts, SubCommand};
+pub use cmd_opts::*;
 

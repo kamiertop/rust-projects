@@ -1,44 +1,7 @@
-use clap::Parser;
-use std::fmt;
+use std::{fmt, path};
 use std::fmt::Formatter;
 use std::str::FromStr;
-
-#[derive(Debug, Parser)]
-#[command(name="cli", version, author, about, long_about=None)]
-pub struct Opts {
-	#[command(subcommand)]
-	pub cmd: SubCommand,
-}
-
-#[derive(Debug, Parser)]
-pub enum SubCommand {
-	#[command(name="csv", about="展示csv或者转换csv到其他格式")]
-	Csv(CsvOpts),
-
-	#[command(name="genpass", about="生成随机密码")]
-	GenPass(GenPassOpts)
-}
-
-#[derive(Debug, Parser)]
-pub struct GenPassOpts {
-	#[arg(short, long, default_value_t = 16)]
-	pub length: u8,
-	#[arg(long, default_value_t = true)]
-	pub uppercase: bool,
-	#[arg(long, default_value_t = true)]
-	pub lowercase: bool,
-	#[arg(long, default_value_t = true)]
-	pub numbers: bool,
-	#[arg(long, default_value_t = true)]
-	pub symbol: bool
-
-}
-#[derive(Debug, Clone, Copy)]
-pub enum OutputFormat {
-	Json,
-	Yaml,
-	// Toml,
-}
+use clap::Parser;
 
 #[derive(Debug, Parser)]
 pub struct CsvOpts {
@@ -58,11 +21,25 @@ pub struct CsvOpts {
 	pub header: bool
 }
 
-fn verify_input_file(filename: &str) -> Result<String, String> {
-	if std::path::Path::new(filename).exists() {
+pub fn verify_input_file(filename: &str) -> Result<String, &'static str> {
+	if filename == "-" || path::Path::new(filename).exists() {
 		Ok(filename.to_string())
 	} else {
-		Err(format!("File {} does not exist", filename))
+
+		Err("File does not exist")
+		// Err(format!("File {} does not exist", filename))
+	}
+}
+
+#[cfg(test)]
+mod tests {
+	use super::*;
+	#[test]
+	fn test_verify_input_file() {
+		assert_eq!(verify_input_file("-"), Ok("-".into()));
+		assert_eq!(verify_input_file("*"), Err("File does not exist"));
+		assert_eq!(verify_input_file("Cargo.toml"),Ok("Cargo.toml".into()));
+		assert_eq!(verify_input_file("not-exist"),Err("File does not exist"));
 	}
 }
 
@@ -92,6 +69,11 @@ impl FromStr for OutputFormat {
 	}
 }
 
+#[derive(Debug, Clone, Copy)]
+pub enum OutputFormat {
+	Json,
+	Yaml,
+}
 impl fmt::Display for OutputFormat {
 	fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
 		write!(f, "{}", Into::<&str>::into(*self))

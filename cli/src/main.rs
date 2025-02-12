@@ -1,5 +1,5 @@
 use clap::Parser;
-use cli::{Opts, SubCommand};
+use cli::{Base64Subcommand, Opts, SubCommand};
 use cli::process;
 
 fn main() -> anyhow::Result<()> {
@@ -16,6 +16,17 @@ fn main() -> anyhow::Result<()> {
 		SubCommand::GenPass(opts) => {
 			process::process_gen_password(opts.length, opts.uppercase, opts.lowercase, opts.numbers, opts.symbol)?
 		}
+		SubCommand::Base64(subcmd) =>{
+			match subcmd {
+				Base64Subcommand::Encode(opts) => {
+					process::process_encode(&opts.input, opts.format)?
+				},
+				Base64Subcommand::Decode(opts) => {
+					process::process_decode(&opts.input, opts.format)?
+				}
+			}
+		}
+
 	}
 
 	Ok(())
