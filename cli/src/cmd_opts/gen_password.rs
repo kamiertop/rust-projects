@@ -11,5 +11,7 @@ pub struct GenPassOpts {
 	#[arg(long, default_value_t = true)]
 	pub numbers: bool,
 	#[arg(long, default_value_t = true)]
-	pub symbol: bool
+	pub symbol: bool,
+	#[arg(long, help = "是否展示密码强度, 默认为不展示" ,default_value_t = false)]
+	pub show_strength: bool,
 }

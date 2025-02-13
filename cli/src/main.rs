@@ -14,7 +14,7 @@ fn main() -> anyhow::Result<()> {
 			process::process_csv(&opts.input, output, opts.format)?
 		},
 		SubCommand::GenPass(opts) => {
-			process::process_gen_password(opts.length, opts.uppercase, opts.lowercase, opts.numbers, opts.symbol)?
+			process::process_gen_password(opts.length, opts.uppercase, opts.lowercase, opts.numbers, opts.symbol, opts.show_strength)?
 		}
 		SubCommand::Base64(subcmd) =>{
 			match subcmd {

@@ -7,7 +7,7 @@ const LOWER: &[u8] = b"abcdefghijkmnpqrstuvwxyz";
 const NUMBERS: &[u8] = b"123456789";
 const SYMBOLS: &[u8] = b"!@#$%^&*_";
 pub fn process_gen_password(
-	length: u8, upper: bool, lower: bool, numbers: bool, symbol: bool
+	length: u8, upper: bool, lower: bool, numbers: bool, symbol: bool, show_strength: bool
 ) -> anyhow::Result<()> {
 	let mut rng = rand::rng();
 	let mut password = Vec::new();
@@ -40,10 +40,10 @@ pub fn process_gen_password(
 	// 打乱
 	password.shuffle(&mut rng);
 
-
-	let result = zxcvbn(&String::from_iter(password.clone()), &[]);
-	eprintln!("Password strength: {}", result.score());
-	
+	if show_strength {
+		let result = zxcvbn(&String::from_iter(password.clone()), &[]);
+		eprintln!("Password strength: {}", result.score());
+	}
 	println!("{}", String::from_iter(password));
 
 	Ok(())
