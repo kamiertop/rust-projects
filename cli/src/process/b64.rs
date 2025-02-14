@@ -1,9 +1,8 @@
-use std::fs::File;
 use std::io::{Read};
 use base64::Engine;
 use base64::engine::general_purpose::{STANDARD, URL_SAFE_NO_PAD};
 use crate::Base64Format;
-
+use super::utils::get_reader;
 pub fn process_encode(input: &str, format: Base64Format) -> anyhow::Result<()> {
 	let mut reader = get_reader(input)?;
 	let mut buf:Vec<u8> = Vec::new();
@@ -45,12 +44,3 @@ pub fn process_decode(input: &str,  format: Base64Format) -> anyhow::Result<()> 
 	Ok(())
 }
 
-fn get_reader(input: &str) -> anyhow::Result<Box<dyn Read>>{
-	let reader:Box<dyn Read> = if input == "-" {
-		Box::new(std::io::stdin())
-	} else {
-		Box::new(File::open(input)?)
-	};
-
-	Ok(reader)
-}

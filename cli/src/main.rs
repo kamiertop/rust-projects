@@ -1,11 +1,14 @@
 use clap::Parser;
-use cli::{Base64Subcommand, Opts, SubCommand};
 use cli::process;
+use cli::{Base64Subcommand, Opts, SubCommand::*};
+use cli::process::process_http_serve;
 
-fn main() -> anyhow::Result<()> {
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
+	tracing_subscriber::fmt::init();
 	let opts = Opts::parse();
 	match opts.cmd {
-		SubCommand::Csv(opts) => {
+		Csv(opts) => {
 			let output = if let Some(output) = opts.output {
 				output.clone()
 			} else {
@@ -13,11 +16,12 @@ fn main() -> anyhow::Result<()> {
 			};
 			process::process_csv(&opts.input, output, opts.format)?
 		},
-		SubCommand::GenPass(opts) => {
-			process::process_gen_password(opts.length, opts.uppercase, opts.lowercase, opts.numbers, opts.symbol, opts.show_strength)?
+		GenPass(opts) => {
+			let pwd = process::process_gen_password(opts.length, opts.uppercase, opts.lowercase, opts.numbers, opts.symbol, opts.show_strength)?;
+			println!("{}", pwd)
 		}
-		SubCommand::Base64(subcmd) =>{
-			match subcmd {
+		Base64(sub_cmd) =>{
+			match sub_cmd {
 				Base64Subcommand::Encode(opts) => {
 					process::process_encode(&opts.input, opts.format)?
 				},
@@ -27,9 +31,10 @@ fn main() -> anyhow::Result<()> {
 			}
 		}
 
+		Http(opts) => {
+			process_http_serve(&opts.dir, opts.port).await?;
+		}
 	}
 
 	Ok(())
 }
-
-

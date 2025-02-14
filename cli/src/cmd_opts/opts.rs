@@ -1,8 +1,7 @@
 use clap::Parser;
 use crate::cmd_opts::base64::Base64Subcommand;
-use crate::cmd_opts::csv::CsvOpts;
-use crate::GenPassOpts;
-
+use super::csv::CsvOpts;
+use crate::{GenPassOpts, HttpServeOpts};
 
 #[derive(Debug, Parser)]
 #[command(name="cli", version, author, about, long_about=None)]
@@ -21,4 +20,7 @@ pub enum SubCommand {
 
 	#[command(name="base64",subcommand)]
 	Base64(Base64Subcommand),
+
+	#[command(name="http" ,about="使用http服务一个目录")]
+	Http(HttpServeOpts)
 }

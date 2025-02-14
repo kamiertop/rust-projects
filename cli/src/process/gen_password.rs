@@ -8,7 +8,7 @@ const NUMBERS: &[u8] = b"123456789";
 const SYMBOLS: &[u8] = b"!@#$%^&*_";
 pub fn process_gen_password(
 	length: u8, upper: bool, lower: bool, numbers: bool, symbol: bool, show_strength: bool
-) -> anyhow::Result<()> {
+) -> anyhow::Result<String> {
 	let mut rng = rand::rng();
 	let mut password = Vec::new();
 	let mut chars = Vec::new();
@@ -44,9 +44,8 @@ pub fn process_gen_password(
 		let result = zxcvbn(&String::from_iter(password.clone()), &[]);
 		eprintln!("Password strength: {}", result.score());
 	}
-	println!("{}", String::from_iter(password));
 
-	Ok(())
+	Ok(String::from_iter(password))
 }
 
 fn choose_char(chars: &mut Vec<u8>,slice: &[u8], rng: &mut ThreadRng) -> char {
