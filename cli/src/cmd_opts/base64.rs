@@ -1,13 +1,30 @@
 use std::fmt;
 use std::str::FromStr;
 use clap::Parser;
+use crate::Base64Subcommand::{Decode, Encode};
+use crate::CmdExecutor;
 use super::csv::verify_input_file;
+use crate::process;
+
 #[derive(Debug, Parser)]
 pub enum Base64Subcommand {
 	#[command(name="encode", about="base64编码")]
 	Encode(Base64EncodeOpts),
 	#[command(name="decode", about="base64解码")]
 	Decode(Base64DecodeOpts),
+}
+
+impl CmdExecutor for Base64Subcommand {
+	async fn execute(self) -> anyhow::Result<()> {
+		match self {
+			Encode(opts) => {
+				process::process_encode(&opts.input, opts.format)
+			},
+			Decode(opts) => {
+				process::process_decode(&opts.input, opts.format)
+			}
+		}
+	}
 }
 
 #[derive(Debug, Parser)]
@@ -21,9 +38,9 @@ pub struct Base64EncodeOpts {
 #[derive(Debug, Parser)]
 pub struct Base64DecodeOpts {
 	#[arg(long, default_value = "-")]
-	pub input: String,
+	input: String,
 	#[arg(long, default_value = "standard", value_parser=parse_base64_format)]
-	pub format: Base64Format,
+	format: Base64Format,
 }
 
 #[derive(Debug,Clone, Copy)]

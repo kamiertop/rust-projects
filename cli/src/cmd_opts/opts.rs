@@ -24,3 +24,19 @@ pub enum SubCommand {
 	#[command(name="http" ,about="使用http服务一个目录")]
 	Http(HttpServeOpts)
 }
+
+#[allow(async_fn_in_trait)]
+pub trait CmdExecutor {
+	async fn execute(self) -> anyhow::Result<()>;
+}
+
+impl CmdExecutor for SubCommand {
+	async fn execute(self) -> anyhow::Result<()> {
+		match self {
+			SubCommand::Csv(opts) => opts.execute().await,
+			SubCommand::GenPass(opts) => opts.execute().await,
+			SubCommand::Base64(opts) => opts.execute().await,
+			SubCommand::Http(opts) => opts.execute().await,
+		}
+	}
+}
